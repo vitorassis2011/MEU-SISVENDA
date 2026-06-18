@@ -1,147 +1,26 @@
-import pygame
-import sys
-import json
+# Função para calcular o IMC
+def calcular_imc():
+    peso = float(input("Digite o seu peso em kg (ex: 70): "))
+    altura = float(input("Digite a sua altura em metros (ex: 1.70): "))
+    
+    # Cálculo do IMC
+    imc = peso / (altura ** 2)
+    
+    print(f"\nSeu IMC é: {imc:.2f}")
+    
+    # Classificação conforme padrões atuais da OMS
+    if imc < 18.5:
+        print("Classificação: Abaixo do peso")
+    elif 18.5 <= imc < 25:
+        print("Classificação: Peso normal")
+    elif 25 <= imc < 30:
+        print("Classificação: Sobrepeso")
+    elif 30 <= imc < 35:
+        print("Classificação: Obesidade grau I")
+    elif 35 <= imc < 40:
+        print("Classificação: Obesidade grau II")
+    else:
+        print("Classificação: Obesidade grau III (Mórbida)")
 
-pygame.init()
-
-# Configurações da tela
-WIDTH, HEIGHT = 800, 400
-screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Football Legends Clone")
-
-# Cores
-WHITE = (255, 255, 255)
-GREEN = (0, 200, 0)
-RED = (200, 0, 0)
-BLUE = (0, 0, 200)
-BLACK = (0, 0, 0)
-
-# Jogadores
-player_size = 40
-player1 = pygame.Rect(100, HEIGHT-60, player_size, player_size)
-player2 = pygame.Rect(650, HEIGHT-60, player_size, player_size)
-
-# Bola
-ball = pygame.Rect(WIDTH//2, HEIGHT//2, 20, 20)
-ball_speed = [3, 3]
-
-# Velocidade dos jogadores
-speed = 5
-jump_height = 10
-gravity = 1
-p1_y_vel = 0
-p2_y_vel = 0
-
-# Placar
-score1 = 0
-score2 = 0
-max_goals = 15
-
-# Fontes
-font = pygame.font.SysFont(None, 40)
-
-# Ranking
-ranking_file = "ranking.json"
-
-def carregar_ranking():
-    try:
-        with open(ranking_file, "r") as f:
-            return json.load(f)
-    except:
-        return {}
-
-def salvar_ranking(ranking):
-    with open(ranking_file, "w") as f:
-        json.dump(ranking, f)
-
-# Login simples
-def login():
-    print("=== LOGIN ===")
-    nome = input("Digite seu nome: ")
-    senha = input("Digite sua senha: ")
-    return nome, senha
-
-# Loop principal
-clock = pygame.time.Clock()
-ranking = carregar_ranking()
-nome1, senha1 = login()
-nome2, senha2 = login()
-
-while True:
-    for event in pygame.event.get():
-        if event.type == pygame.QUIT:
-            pygame.quit()
-            sys.exit()
-
-    keys = pygame.key.get_pressed()
-
-    # Controles Jogador 1
-    if keys[pygame.K_a]:
-        player1.x -= speed
-    if keys[pygame.K_d]:
-        player1.x += speed
-    if keys[pygame.K_w] and player1.bottom >= HEIGHT:
-        p1_y_vel = -jump_height
-    if keys[pygame.K_s] and player1.colliderect(ball):
-        ball_speed[0] = -ball_speed[0]
-
-    # Controles Jogador 2
-    if keys[pygame.K_LEFT]:
-        player2.x -= speed
-    if keys[pygame.K_RIGHT]:
-        player2.x += speed
-    if keys[pygame.K_UP] and player2.bottom >= HEIGHT:
-        p2_y_vel = -jump_height
-    if keys[pygame.K_k] and player2.colliderect(ball):
-        ball_speed[0] = -ball_speed[0]
-
-    # Física dos jogadores
-    p1_y_vel += gravity
-    player1.y += p1_y_vel
-    if player1.bottom >= HEIGHT:
-        player1.bottom = HEIGHT
-        p1_y_vel = 0
-
-    p2_y_vel += gravity
-    player2.y += p2_y_vel
-    if player2.bottom >= HEIGHT:
-        player2.bottom = HEIGHT
-        p2_y_vel = 0
-
-    # Movimento da bola
-    ball.x += ball_speed[0]
-    ball.y += ball_speed[1]
-
-    # Colisão com paredes
-    if ball.top <= 0 or ball.bottom >= HEIGHT:
-        ball_speed[1] = -ball_speed[1]
-
-    # Gols
-    if ball.left <= 0:  # Gol jogador 2
-        score2 += 1
-        ball.center = (WIDTH//2, HEIGHT//2)
-    if ball.right >= WIDTH:  # Gol jogador 1
-        score1 += 1
-        ball.center = (WIDTH//2, HEIGHT//2)
-
-    # Fim de jogo
-    if score1 >= max_goals or score2 >= max_goals:
-        vencedor = nome1 if score1 > score2 else nome2
-        print(f"Fim de jogo! Vencedor: {vencedor}")
-        ranking[vencedor] = ranking.get(vencedor, 0) + 1
-        salvar_ranking(ranking)
-        pygame.quit()
-        sys.exit()
-
-    # Desenho
-    screen.fill(GREEN)
-    pygame.draw.rect(screen, RED, player1)
-    pygame.draw.rect(screen, BLUE, player2)
-    pygame.draw.ellipse(screen, WHITE, ball)
-
-    # Placar
-    placar_texto = font.render(f"{nome1}: {score1} | {nome2}: {score2}", True, BLACK)
-    screen.blit(placar_texto, (WIDTH//2 - 150, 20))
-
-    pygame.display.flip()
-    clock.tick(60)
+# Executa o programa
+calcular_imc()
